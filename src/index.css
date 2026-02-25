@@ -1,0 +1,22 @@
+@import '@adaptabletools/adaptable-react-aggrid/index.css';
+@import '@adaptabletools/adaptable-react-aggrid/themes/dark.css';
+
+:root {
+  --ab__font-family: Helvetica;
+}
+
+body {
+  font-family: var(--ab__font-family);
+  padding: 0;
+  margin: 0;
+}
+
+.customSettingsPanel-label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.customSettingsPanel-label input {
+  display: block;
+  margin-top: 3px;
+}
