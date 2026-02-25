@@ -1,4 +1,4 @@
-# AdapTable React Example App
+# AdapTable React AG Grid Example App with CRA/CRACO as build tool
 
 This is a fairly basic example of how to get started with AdapTable React.
 
@@ -15,6 +15,7 @@ The demo is built using these key packages:
 - [React](https://github.com/facebook/react) version 19.0
 - [AdapTable](https://www.adaptabletools.com) version 22
 - [AG Grid](https://www.ag-grid.com) version 35.0
+- [CRA/CRACO](https://craco.js.org/) version 7.1.0
 
 ## AdapTable React Custom Components
 
@@ -114,7 +115,18 @@ Run `npm install` (or `yarn`), depending on what tool you're using.
 Execute the following command
 
 ```sh
-$ npm run start
+$ npm start
+```
+If you want to build a "production"-ready bundle, run 
+```sh
+npm run build
+```
+
+and then use a static server to serve the build folder
+
+
+```sh
+npx serve build
 ```
 
 ## Licences

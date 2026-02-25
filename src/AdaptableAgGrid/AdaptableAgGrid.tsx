@@ -10,6 +10,8 @@ import {
   CustomToolbarButtonContext,
   CustomToolPanelButtonContext,
   ToolPanelButtonContext,
+  useAdaptableState,
+  useCurrentLayout,
 } from '@adaptabletools/adaptable-react-aggrid';
 import { columnDefs, defaultColDef } from './columnDefs';
 import { WebFramework, rowData } from './rowData';
@@ -22,6 +24,21 @@ import { counterSelector, storeRedux } from '../store-redux';
 LicenseManager.setLicenseKey(process.env.REACT_APP_AG_GRID_LICENSE_KEY as string);
 
 const CONFIG_REVISION = 1;
+
+function CustomCmp() {
+  const [currentLayout, setCurrentLayout] = useCurrentLayout()
+
+  const layouts = useAdaptableState(state => state.Layout.Layouts)
+
+  return <div style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center', padding: '12px 16px' }}>
+    <label>Current Active Layout:</label>
+    <select value={currentLayout?.Name} onChange={(e) => setCurrentLayout(e.target.value as string)}>
+      {layouts?.map(layout => (
+        <option key={layout.Name} value={layout.Name}>{layout.Name}</option>
+      ))}
+    </select>
+  </div>
+}
 
 export const AdaptableAgGrid = () => {
   const gridOptions = useMemo<GridOptions<WebFramework>>(
@@ -55,7 +72,7 @@ export const AdaptableAgGrid = () => {
       primaryKey: 'id',
       userName: 'Test User',
       adaptableId: 'Adaptable React with CRA(CO)',
-      adaptableStateKey: 'adaptable_react_demo',
+      adaptableStateKey: 'adaptable_react_demo with cra(co)',
       settingsPanelOptions: {
         customSettingsPanels: [
           {
@@ -226,7 +243,7 @@ export const AdaptableAgGrid = () => {
           Tabs: [
             {
               Name: 'Welcome',
-              Toolbars: ['GithubRepo', 'CustomSettingsPanel', 'CustomQuickSearch'],
+              Toolbars: ['GithubRepo', 'CustomSettingsPanel', 'CustomQuickSearch', 'Layout'],
             },
           ],
         },
@@ -387,6 +404,7 @@ export const AdaptableAgGrid = () => {
         }}
       >
         <div style={{ display: 'flex', flexFlow: 'column', height: '100vh' }}>
+          <CustomCmp />
           <Adaptable.UI style={{ flex: 'none' }} />
           <Adaptable.AgGridReact />
         </div>

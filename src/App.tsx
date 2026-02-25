@@ -6,7 +6,7 @@ function App() {
   return (
     <div>
       <Provider store={storeRedux}>
-        <AdaptableAgGrid></AdaptableAgGrid>
+        <AdaptableAgGrid />
       </Provider>
     </div>
   );
