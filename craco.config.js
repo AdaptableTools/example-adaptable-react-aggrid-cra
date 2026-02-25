@@ -13,6 +13,7 @@ module.exports = {
         },
       });
 
+      // this avoids some build warnings
       const cssMinimizer = webpackConfig.optimization.minimizer.find(
         (plugin) => plugin.constructor.name === 'CssMinimizerPlugin'
       );
