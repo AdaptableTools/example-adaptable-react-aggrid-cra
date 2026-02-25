@@ -4,41 +4,16 @@ import { LicenseManager, GridOptions, themeQuartz } from 'ag-grid-enterprise';
 import {
   Adaptable,
   AdaptableApi,
-  AdaptableButton,
-  AdaptableOptions,
-  AdaptableStateFunctionConfig,
-  CustomToolbarButtonContext,
-  CustomToolPanelButtonContext,
-  ToolPanelButtonContext,
-  useAdaptableState,
-  useCurrentLayout,
+  AdaptableOptions
 } from '@adaptabletools/adaptable-react-aggrid';
 import { columnDefs, defaultColDef } from './columnDefs';
 import { WebFramework, rowData } from './rowData';
 import { agGridModules } from './agGridModules';
-import { CustomSettingsPanel } from '../CustomSettingsPanel';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import { QuickSearchCustomComponent } from '../QuickSearchCustomComponent';
-import { counterSelector, storeRedux } from '../store-redux';
 
 LicenseManager.setLicenseKey(process.env.REACT_APP_AG_GRID_LICENSE_KEY as string);
 
 const CONFIG_REVISION = 1;
 
-function CustomCmp() {
-  const [currentLayout, setCurrentLayout] = useCurrentLayout()
-
-  const layouts = useAdaptableState(state => state.Layout.Layouts)
-
-  return <div style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'center', padding: '12px 16px' }}>
-    <label>Current Active Layout:</label>
-    <select value={currentLayout?.Name} onChange={(e) => setCurrentLayout(e.target.value as string)}>
-      {layouts?.map(layout => (
-        <option key={layout.Name} value={layout.Name}>{layout.Name}</option>
-      ))}
-    </select>
-  </div>
-}
 
 export const AdaptableAgGrid = () => {
   const gridOptions = useMemo<GridOptions<WebFramework>>(
@@ -72,195 +47,23 @@ export const AdaptableAgGrid = () => {
       primaryKey: 'id',
       userName: 'Test User',
       adaptableId: 'Adaptable React with CRA(CO)',
-      adaptableStateKey: 'adaptable_react_demo with cra(co)',
-      settingsPanelOptions: {
-        customSettingsPanels: [
-          {
-            // CUSTOM SETTINGS PANEL COMPONENT
-            frameworkComponent: CustomSettingsPanel,
-            name: 'Custom Settings',
-          },
-        ],
-      },
-      dashboardOptions: {
-        customToolbars: [
-          {
-            name: 'GithubRepo',
-            title: 'Github Repo',
-            showConfigureButton: false,
-            toolbarButtons: [
-              {
-                label: 'See Source Code',
-                buttonStyle: {
-                  variant: 'raised',
-                  tone: 'info',
-                },
-                icon: {
-                  src: 'https://www.pngkey.com/png/full/178-1787243_github-icon-png-github-icon-white-png.png',
-                  style: {
-                    width: 24,
-                    height: 24,
-                  },
-                },
-                onClick: () => {
-                  (window as any)
-                    ?.open(
-                      'https://github.com/AdaptableTools/example-adaptable-react-aggrid-cra',
-                      '_blank'
-                    )
-                    .focus();
-                },
-              },
-            ],
-          },
-          {
-            name: 'CustomSettingsPanel',
-            title: 'Custom Settings Panel',
-            showConfigureButton: false,
-            toolbarButtons: [
-              {
-                label: 'Open Custom Settings Panel',
-                buttonStyle: {
-                  variant: 'raised',
-                  tone: 'accent',
-                },
-                onClick: (
-                  _button: AdaptableButton<CustomToolbarButtonContext>,
-                  context: CustomToolbarButtonContext
-                ) => {
-                  context.adaptableApi.settingsPanelApi.openCustomSettingsPanel('Custom Settings');
-                },
-              },
-            ],
-          },
-          {
-            // CUSTOM TOOLBAR COMPONENT
-            // wraps a reusable React component (same component is used in a custom tool panel)
-            name: 'CustomQuickSearch',
-            title: 'Custom Quick Search',
-            frameworkComponent: ({ adaptableApi }) => {
-              return (
-                <Provider store={storeRedux}>
-                  <QuickSearchCustomComponent
-                    onSearchTextChange={(searchText: string) => {
-                      adaptableApi.quickSearchApi.runQuickSearch(searchText);
-                    }}
-                  />
-                </Provider>
-              );
-            },
-          },
-        ],
-      },
-      toolPanelOptions: {
-        customToolPanels: [
-          {
-            // CUSTOM TOOLPANEL COMPONENT
-            // wraps a reusable React component (same component is used in a custom toolbar)
-            name: 'CustomQuickSearch',
-            title: 'Custom Quick Search',
-            frameworkComponent: ({ adaptableApi }) => {
-              return (
-                <QuickSearchCustomComponent
-                  onSearchTextChange={(searchText: string) => {
-                    adaptableApi.quickSearchApi.runQuickSearch(searchText);
-                  }}
-                />
-              );
-            },
-          },
-          {
-            // CUSTOM TOOLPANEL COMPONENT
-            // wraps a AdaptableButton component
-            name: 'CustomToolPanelButton',
-            buttons: [
-              {
-                label: 'AlertButton',
-                buttonStyle: {
-                  variant: 'raised',
-                  tone: 'accent',
-                },
-                onClick: (
-                  _button: AdaptableButton<CustomToolPanelButtonContext>,
-                  context: CustomToolPanelButtonContext
-                ) => {
-                  context.adaptableApi.alertApi.showAlertInfo(
-                    'CustomToolPanelButton',
-                    'Styled button & icon'
-                  );
-                },
-              },
-            ],
-          },
-        ],
-        // CUSTOM TOOLPANEL COMPONENT
-        // rendered as a Button in the heading of the tool panel section
-        customButtons: [
-          {
-            label: 'Grid Filter Popup',
-            icon: {
-              src: 'https://img.icons8.com/glyph-neue/64/000000/zoom-in.png',
-            },
-            buttonStyle: {
-              variant: 'outlined',
-              // tone: 'accent',
-            },
-            onClick: (
-              _button: AdaptableButton<ToolPanelButtonContext>,
-              context: ToolPanelButtonContext
-            ) => {
-              context.adaptableApi.filterApi.gridFilterApi.openUIEditorForGridFilter(
-                'CONTAINS([language],"type")'
-              );
-            },
-          },
-        ],
-      },
-      // Typically you will store State remotely; here we simply leverage local storage for convenience
-      stateOptions: {
-        persistState: (state, adaptableStateFunctionConfig) => {
-          localStorage.setItem(
-            adaptableStateFunctionConfig.adaptableStateKey,
-            JSON.stringify(state)
-          );
-          return Promise.resolve(true);
-        },
-        loadState: (config: AdaptableStateFunctionConfig) => {
-          return new Promise((resolve) => {
-            let state = {};
-            try {
-              state = JSON.parse(localStorage.getItem(config.adaptableStateKey) as string) || {};
-            } catch (err) {
-              console.log('Error loading state', err);
-            }
-            resolve(state);
-          });
-        },
-      },
+      adaptableStateKey: 'adaptable_react_demo_with_craco',
       initialState: {
         Dashboard: {
           Revision: CONFIG_REVISION,
           Tabs: [
             {
               Name: 'Welcome',
-              Toolbars: ['GithubRepo', 'CustomSettingsPanel', 'CustomQuickSearch', 'Layout'],
-            },
-          ],
-        },
-        StatusBar: {
-          Revision: CONFIG_REVISION,
-          StatusBars: [
-            {
-              Key: 'Center Panel',
-              StatusBarPanels: ['Theme', 'Layout'],
+              Toolbars: ['Layout'],
             },
           ],
         },
         Layout: {
-          CurrentLayout: 'Basic',
+          Revision: CONFIG_REVISION,
+          CurrentLayout: 'Default',
           Layouts: [
             {
-              Name: 'Basic',
+              Name: 'Default',
               TableColumns: [
                 'name',
                 'language',
@@ -280,49 +83,24 @@ export const AdaptableAgGrid = () => {
               ],
             },
             {
-              Name: 'Sorted',
+              Name: 'Small Layout',
               TableColumns: [
                 'name',
                 'language',
+                'week_issue_change',
+                'created_at',
                 'github_stars',
                 'license',
-                'open_issues_count',
-                'closed_issues_count',
-                'open_pr_count',
-                'closed_pr_count',
               ],
-              ColumnSorts: [
-                {
-                  ColumnId: 'license',
-                  SortOrder: 'Asc',
-                },
-                {
-                  ColumnId: 'language',
-                  SortOrder: 'Desc',
-                },
-              ],
-            },
+            }
+          ],
+        },
+        StatusBar: {
+          Revision: CONFIG_REVISION,
+          StatusBars: [
             {
-              Name: 'Row Grouped',
-              TableColumns: [
-                'name',
-                'github_stars',
-                'open_issues_count',
-                'closed_issues_count',
-                'open_pr_count',
-                'closed_pr_count',
-                'open_issues_count',
-                'closed_issues_count',
-              ],
-              RowGroupedColumns: ['license', 'language'],
-            },
-            {
-              Name: 'Pivot',
-              PivotColumns: ['language'],
-              PivotGroupedColumns: ['license'],
-              AggregationColumns: {
-                github_stars: 'sum',
-              },
+              Key: 'Center Panel',
+              StatusBarPanels: ['Theme'],
             },
           ],
         },
@@ -333,67 +111,9 @@ export const AdaptableAgGrid = () => {
 
   const adaptableApiRef = React.useRef<AdaptableApi>(null);
 
-  const count = useSelector(counterSelector);
-  const dispatch = useDispatch();
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          padding: '12px 16px',
-          background: '#f5f6fa',
-          borderBottom: '1px solid #e0e0e0',
-        }}
-      >
-        <button
-          style={{
-            padding: '6px 16px',
-            background: '#3b82f6',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            fontSize: 14,
-            fontWeight: 500,
-            cursor: 'pointer',
-          }}
-          onClick={() => dispatch({ type: 'counter/incremented' })}
-        >
-          + Increment
-        </button>
-        <button
-          style={{
-            padding: '6px 16px',
-            background: '#ef4444',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            fontSize: 14,
-            fontWeight: 500,
-            cursor: 'pointer',
-          }}
-          onClick={() => dispatch({ type: 'counter/decremented' })}
-        >
-          − Decrement
-        </button>
-        <span
-          style={{
-            marginLeft: 4,
-            padding: '4px 14px',
-            background: '#fff',
-            border: '1px solid #d1d5db',
-            borderRadius: 6,
-            fontWeight: 600,
-            fontSize: 16,
-            minWidth: 40,
-            textAlign: 'center',
-          }}
-        >
-          {count}
-        </span>
-      </div>
+
       <Adaptable.Provider
         gridOptions={gridOptions}
         adaptableOptions={adaptableOptions}
@@ -404,7 +124,7 @@ export const AdaptableAgGrid = () => {
         }}
       >
         <div style={{ display: 'flex', flexFlow: 'column', height: '100vh' }}>
-          <CustomCmp />
+
           <Adaptable.UI style={{ flex: 'none' }} />
           <Adaptable.AgGridReact />
         </div>
